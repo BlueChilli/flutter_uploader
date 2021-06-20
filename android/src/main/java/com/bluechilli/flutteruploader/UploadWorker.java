@@ -158,8 +158,11 @@ public class UploadWorker extends ListenableWorker implements CountProgressListe
                   null));
         }
 
-        String mimeType = GetMimeType(item.getPath());
-        MediaType contentType = MediaType.parse(mimeType);
+        MediaType contentType = null;
+        if (headers == null || (headers != null && headers.get("Content-Type") == null && headers.get("content-type") == null)) {
+          String mimeType = GetMimeType(item.getPath());
+          contentType = MediaType.parse(mimeType);
+        }
         innerRequestBody = RequestBody.create(file, contentType);
       } else {
         MultipartBody.Builder formRequestBuilder = prepareRequest(parameters, null);
@@ -170,8 +173,11 @@ public class UploadWorker extends ListenableWorker implements CountProgressListe
 
           if (file.exists() && file.isFile()) {
             fileExistsCount++;
-            String mimeType = GetMimeType(item.getPath());
-            MediaType contentType = MediaType.parse(mimeType);
+            MediaType contentType = null;
+            if (headers == null || (headers != null && headers.get("Content-Type") == null && headers.get("content-type") == null)) {
+              String mimeType = GetMimeType(item.getPath());
+              contentType = MediaType.parse(mimeType);
+            }
             RequestBody fileBody = RequestBody.create(file, contentType);
             formRequestBuilder.addFormDataPart(item.getFieldname(), file.getName(), fileBody);
           } else {
